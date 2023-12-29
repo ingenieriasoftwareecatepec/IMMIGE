@@ -1,39 +1,43 @@
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
+import Dropzone from "dropzone";
+ 
+Dropzone.autoDiscover = false;
 
-import './bootstrap';
-import { createApp } from 'vue';
+if(document.getElementById("dropzone")) {
+    
+    const dropzone = new Dropzone(".dropzone", {
+        dictDefaultMessage: "Arrastra aqui tus imagenes",
+        acceptedFiles: ".png,.jpg,.jpeg,.gif",
+        addRemoveLinks: true,
+        dictRemoveFile: "Eliminar imagen",
+        dictCancelUpload: "Cancelar",
+        dictMaxFilesExceeded: "No se pueden subir más archivos",
+        maxFiles: 5,
+        uploadMultiple: false,
+        init: function() {
+            if(document.querySelector('[name="imagen"]').value.trim()){
+                const imagenPublicada = {}
+                imagenPublicada.size = 1234;
+                imagenPublicada.name = document.querySelector('[name="imagen"]').value;
+    
+                this.options.addedfile.call(this, imagenPublicada);
+                this.options.thumbnail.call(this, imagenPublicada, '/uploads/${imagenPublicada.name}');
+    
+                imagenPublicada.previewElement.classList.add('dz-success', 'dz-complete');
+            }
+        },
+    });
 
-/**
- * Next, we will create a fresh Vue application instance. You may then begin
- * registering components with the application instance so they are ready
- * to use in your application's views. An example is included for you.
- */
+    let imagenes = [];
 
-const app = createApp({});
+    dropzone.on("success", function (file, response){
+        imagenes.push(response.imagen);
+        document.querySelector('[name="imagen"]').value = JSON.stringify(imagenes);
+    });
 
-import ExampleComponent from './components/ExampleComponent.vue';
-app.component('example-component', ExampleComponent);
+    dropzone.on('removedfile', function() {
+        document.querySelector('[name="imagen"]').value = '';
+    });
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
+}
 
-// Object.entries(import.meta.glob('./**/*.vue', { eager: true })).forEach(([path, definition]) => {
-//     app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
-// });
-
-/**
- * Finally, we will attach the application instance to a HTML element with
- * an "id" attribute of "app". This element is included with the "auth"
- * scaffolding. Otherwise, you will need to add an element yourself.
- */
-
-app.mount('#app');
+import './jon';
